@@ -1,3 +1,4 @@
+
 var message = {
   username: 'wassup',
   text: '<script>alert("wassup")</script>',
@@ -7,10 +8,12 @@ var message = {
 // post to server is available to everyone
 var app = {
   init : function(){
+    //populate website with messages
+    this.fetch('https://api.parse.com/1/classes/chatterbox')
+  },  
 
-  },
-
-  send : function(message){ $.ajax({
+  send : function(message){ 
+    $.ajax({
       url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'POST',
       data: JSON.stringify(message),
@@ -24,15 +27,15 @@ var app = {
       }
     })
   },
-  fetch : function(url){$.ajax({
+  fetch : function(url){
+    return $.ajax({ //$.ajax is an outer function that also needs to return
       // 'https://api.parse.com/1/classes/chatterbox'
-      url: url,
+      url: url,  //WHY? instead of passing in an actual url
       type: 'GET',
       data: null,
       success: function (data) {
-        my_data = data
-        console.log(data)
-        this.data = data
+        var response = data;
+        pushMessages(response);
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -41,6 +44,28 @@ var app = {
     },'text') //should prevent all aerial attacks
   },
   clearMessages : function(){
-    
-  }
+      $('#chats').empty();
+  },
+  addMessage : function(text){
+    //hacker proof top notch security
+      $('#chats').prepend("<div>");
+      $('#chats div:first').text(text);
+  },
+  // addRoom : function(){
+  //   $('#roomSelect').append('<d)
+  // }
+
 }
+
+response = app.fetch('https://api.parse.com/1/classes/chatterbox')
+
+var pushMessages = function(response){
+  console.log(response.results)
+  // var parsedResponse = JSON.parse(response.responseText);
+  _.each(response.results,function(message){
+    app.addMessage(message.text);
+  })
+}
+
+
+
