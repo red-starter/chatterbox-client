@@ -35,7 +35,11 @@ var app = {
       data: null,
       success: function (data) {
         var response = data;
+        console.log(response)
+
         pushMessages(response);
+        var rooms = makeRoomsObject(data.results)
+        makeButtons(rooms);
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -51,21 +55,66 @@ var app = {
       $('#chats').prepend("<div>");
       $('#chats div:first').text(text);
   },
-  // addRoom : function(){
-  //   $('#roomSelect').append('<d)
-  // }
+  addRoom : function(){
+    $('#roomSelect').append()
+  }
 
 }
 
 response = app.fetch('https://api.parse.com/1/classes/chatterbox')
 
 var pushMessages = function(response){
-  console.log(response.results)
   // var parsedResponse = JSON.parse(response.responseText);
+  response.results = response.results.slice(0,20);
   _.each(response.results,function(message){
     app.addMessage(message.text);
   })
 }
+
+var makeRoomsObject = function(results) {
+
+  var rooms = {};
+  results.forEach(function(message) {
+    var key = message.roomname;
+    if(rooms[key]){
+      rooms[key].push(message);
+    } else {
+      rooms[key] = [message];
+    }
+  })
+  console.log(rooms);
+  return rooms;
+
+};
+
+var makeButtons = function(rooms) {
+  // _.each(rooms, function(room) {
+  //   $(".roomButtons").append("<button>"+room)
+  // })
+  for (var key in rooms) {
+    //reference to node
+    var $button = $("<button>");
+    $button.click(function(){
+      var messageArr = rooms[$(this).text()]
+      app.clearMessages();
+      messageArr.forEach(function(message){
+        app.addMessage(message.text);
+      })
+    })
+    $(".roomButtons").append($button)
+    $(".roomButtons button:last").text(key)
+  }
+};
+
+$(".roomButtons").click()
+
+
+
+
+
+
+
+
 
 
 
