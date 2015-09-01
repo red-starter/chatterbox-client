@@ -1,4 +1,4 @@
-
+$(document).ready(function(){ 
 var message = {
   username: 'wassup',
   text: '<script>alert("wassup")</script>',
@@ -35,8 +35,6 @@ var app = {
       data: null,
       success: function (data) {
         var response = data;
-        console.log(response)
-
         pushMessages(response);
         var rooms = makeRoomsObject(data.results)
         makeButtons(rooms);
@@ -82,7 +80,6 @@ var makeRoomsObject = function(results) {
       rooms[key] = [message];
     }
   })
-  console.log(rooms);
   return rooms;
 
 };
@@ -98,18 +95,38 @@ var makeButtons = function(rooms) {
       var messageArr = rooms[$(this).text()]
       app.clearMessages();
       messageArr.forEach(function(message){
-        app.addMessage(message.text);
+        app.addMessage(_.escape(message.text));
       })
     })
-    $(".roomButtons").append($button)
+
+    var option = $('<option>');
+    $("select").prepend(option)
+    $("select option:first").text(key)
+
+
+    $(".roomButtons").prepend($button)
     $(".roomButtons button:last").text(key)
   }
 };
 
-$(".roomButtons").click()
+  $("input").submit(function() {
+    var messageForm = $(".messageForm").val();
+    return false;
+  })
 
+  $("button:first").click(function(){
+    var name = $("input:first").val();
+    //clear the input
+    $("input:first").val("");
+    var message = $("input:last").val();
+    $("input:last").val("");
+    messageObject = {};
+    messageObject.text = message;
+    messageObject.username = name;
 
+  });
 
+})
 
 
 
